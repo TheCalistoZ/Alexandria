@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alexandria - Detalhes do Servidor Minecraft</title>
+    <!-- Link para o CSS principal -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Estilos específicos para esta página -->
+    <style>
+        /* Estilos base herdados ou redefinidos */
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            padding-top: 80px; /* Espaço para a barra de navegação fixa */
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Container principal para centralizar conteúdo */
+        .main-content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 5%;
+            min-height: calc(100vh - 195px); /* Altura mínima considerando nav e footer (estimado) */
+        }
+
+        /* Utilitário para centralizar texto */
+        .text-center {
+            text-align: center;
+        }
+
+        /* Slideshow do servidor */
+        .server-slideshow {
+            position: relative; /* Necessário para posicionar elementos internos */
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 500px; /* Altura generosa para o slideshow */
+            margin-bottom: 50px; /* Espaço abaixo do slideshow */
+            overflow: hidden; /* Garante que as imagens não ultrapassem o container */
+            width: 100%;
+            aspect-ratio: 16 / 9; /* Proporção comum para imagens/slideshows */
+        }
+
+        .server-slideshow img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cobre o container, pode cortar partes da imagem */
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out; /* Transição suave de opacidade */
+            will-change: opacity; /* Otimização para a animação */
+        }
+
+        .server-slideshow img.active {
+            opacity: 1; /* Imagem ativa é visível */
+        }
+
+        /* Botões de Navegação do Slideshow */
+        .slideshow-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
+            z-index: 10; /* Garante que os botões fiquem sobre as imagens */
+            pointer-events: none; /* Permite cliques através da div nav nos botões */
+        }
+
+        .slideshow-nav button {
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            pointer-events: auto; /* Habilita cliques nos botões */
+            line-height: 1;
+        }
+
+        .slideshow-nav button:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        #prev-slide {
+            /* Estilos específicos se necessário */
+        }
+
+        #next-slide {
+            /* Estilos específicos se necessário */
+        }
+
+        /* Conteúdo do Servidor (Texto abaixo do slideshow) */
+        .server-content {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 30px 40px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Caixa separada para as Regras */
+        .rules-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 30px 40px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .rules-box ol {
+            list-style-position: inside; /* Ajusta posição dos números */
+            padding-left: 0; /* Remove padding padrão */
+        }
+
+        .rules-box ol li {
+            margin-bottom: 20px; /* Aumenta o espaçamento inferior entre as regras */
+            padding-left: 5px; /* Pequeno ajuste para alinhar com o texto */
+            line-height: 1.5; /* Melhora a legibilidade */
+            font-size: 17px; /* Ajustado para 17px */
+        }
+
+        .server-content h2, .server-content h3, .rules-box h2 {
+            color: #eee;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* Tamanho específico para o título principal */
+        .main-title {
+            font-size: 24px !important; /* Ajustado para 24px */
+        }
+
+        /* Tamanho específico para subtítulos */
+        .subtitle {
+            font-size: 20px; /* Ajustado para 20px */
+            color: #eee; /* Manter cor consistente */
+            margin-bottom: 10px; /* Ajuste de margem */
+            font-weight: 600;
+        }
+
+        /* Tamanho específico para texto geral */
+        .general-text {
+            font-size: 17px; /* Ajustado para 17px */
+            color: rgba(255, 255, 255, 0.8); /* Manter cor consistente */
+            margin-bottom: 1.2em;
+        }
+
+        .server-content p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.2em;
+        }
+
+        .server-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .server-content li {
+            margin-bottom: 1em;
+            padding-left: 1.5em;
+            position: relative;
+        }
+
+        /* Estilo de bolinha azul removido */
+        /* .server-content li::before {
+            content: "\2022"; 
+            color: #2997ff; 
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1.5em;
+            position: absolute;
+            left: 0;
+        } */
+
+        /* Estilo Drop Cap removido */
+        /* .section-title-dropcap::first-letter {
+            font-size: 2.5em; 
+            float: left;
+            margin-right: 0.1em;
+            line-height: 0.7;
+            font-weight: 700;
+            color: #5ac8fa; 
+            margin-top: 0.1em;
+        } */
+
+        /* Estilo para o logo final Alexandria */
+        .final-logo {
+            display: block;
+            text-align: center;
+            font-size: 2.5rem; /* Tamanho similar ao logo principal */
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            margin-top: 40px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .tagline {
+            display: block;
+            text-align: center;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 15px;
+        }
+
+        .since-date {
+            display: block;
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .copyright {
+            display: block;
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 20px;
+        }
+
+        /* Placeholder para o botão Discord */
+        .discord-button-placeholder {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Estilos da barra de navegação (inalterados) */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(25, 25, 25, 0.7), rgba(0, 0, 0, 0.7));
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        nav:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.1) 20%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0.1) 80%,
+                    transparent 100%);
+        }
+
+        .nav-container {
+            width: 90%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        .logo:hover {
+            color: #2997ff;
+            text-shadow: 0 0 15px rgba(41, 151, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 400;
+            position: relative;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #2997ff;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, #2997ff, #5ac8fa);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Estilos para o botão roxo (serão usados no passo 021) */
+        .cta-button-primary-roxo {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            color: #fff;
+            padding: 15px 35px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 15px rgba(142, 45, 226, 0.3);
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+            display: inline-block; /* Para que o width funcione corretamente */
+            text-align: center;
+        }
+
+        .cta-button-primary-roxo::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            transition: left 0.6s ease;
+        }
+
+        .cta-button-primary-roxo:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(142, 45, 226, 0.5);
+        }
+
+        .cta-button-primary-roxo:hover::before {
+            left: 100%;
+        }
+
+        .cta-button-primary-roxo .sparkle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .cta-button-primary-roxo .sparkle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff;
+            animation: sparkle-anim 1s infinite linear;
+            opacity: 0;
+        }
+
+        @keyframes sparkle-anim {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.5) rotate(180deg); opacity: 0.5; }
+            100% { transform: scale(1) rotate(360deg); opacity: 0; }
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Barra de navegação (copiada de index.html) -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">ALEXANDRIA</a> <!-- Link para a página inicial -->
+            <div class="nav-links">
+                <!-- Links podem apontar para seções em index.html ou outras páginas -->
+                <a href="index.html#discord" class="nav-link">Discord</a>
+                <a href="index.html#minecraft" class="nav-link">Minecraft</a>
+                <a href="index.html#steam" class="nav-link">Steam</a>
+                <a href="index.html#galeria" class="nav-link">Galeria</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo principal da página do servidor -->
+    <div class="main-content">
+        <!-- Slideshow do Servidor -->
+        <div class="server-slideshow" id="server-slideshow">
+            <!-- As imagens serão adicionadas aqui pelo JavaScript -->
+            <!-- Botões de Navegação -->
+            <div class="slideshow-nav">
+                <button id="prev-slide">&#10094;</button> <!-- Seta para esquerda -->
+                <button id="next-slide">&#10095;</button> <!-- Seta para direita -->
+            </div>
+        </div>
+
+        <!-- Conteúdo do Servidor -->
+        <div class="server-content">
+            <h2 class="section-title-dropcap text-center main-title">Bem-vindo ao Alexandria</h2>
+            <h3 class="subtitle">Onde Sua História Começa!</h3>
+            <p class="general-text">Você está prestes a entrar em um mundo como nenhum outro. Alexandria não é apenas um servidor de Minecraft — é uma experiência imersiva, um universo vibrante construído por jogadores apaixonados, para jogadores visionários. Aqui, cada bloco colocado e cada aliança formada se transforma em parte de uma narrativa viva, onde VOCÊ é o(a) protagonista.</p>
+
+            <h3 class="subtitle">Crie. Conquiste. Conecte-se.</h3>
+            <p class="general-text">Em Alexandria, você tem liberdade para construir desde casinhas acolhedoras em vales tranquilos até mansões majestosas nas alturas. Com eventos únicos, plugins personalizados e uma comunidade acolhedora, você terá motivos de sobra para voltar todos os dias.</p>
+            <h3 class="subtitle">Aventure-se com propósito.</h3>
+            <p class="general-text">Lute contra chefes lendários, enfrente missões que mudam o rumo do servidor e descubra os mistérios escondidos em biomas secretos.</p>
+            <h3 class="subtitle">Participe de uma comunidade única.</h3>
+            <p class="general-text">Cheia de criadores, aventureiros, construtores e amigos prontos para te receber de braços abertos.</p>
+
+            <h3 class="subtitle">Por que Alexandria?</h3>
+            <p class="general-text">Porque aqui cada jogador importa, cada jornada é valorizada, e cada construção conta uma parte da história. Nosso time está sempre presente para ouvir a comunidade e trazer atualizações que deixam o servidor ainda mais envolvente.</p>
+            <p class="general-text"><em>Criado por Alexandre, Idealizado para você</em></p>
+            <p class="general-text">Entre agora e comece a escrever sua lenda. Alexandria está esperando por você. O mundo é vasto, os desafios são épicos onde a aventura depende de um só passo.</p>
+        </div> <!-- Close server-content -->
+
+        <!-- Caixa de Regras -->
+        <div class="rules-box">
+            <h2 class="section-title-dropcap text-center">REGRAS</h2>
+            <ol>
+                <li><strong>Respeito acima de tudo:</strong> Trate todos os jogadores com educação. Ofensas, preconceitos, assédio ou qualquer tipo de discriminação não serão tolerados.</li>
+                <li><strong>Sem hacks ou trapaças:</strong> É proibido o uso de qualquer tipo de mod, hack ou exploit que dê vantagem injusta no jogo (como X-Ray, autoclick, fly, etc.).</li>
+                <li><strong>Griefing é proibido (fora de áreas PvP):</strong> Não destrua, roube ou modifique construções de outros jogadores sem permissão. Em áreas PvP, o que acontecer está dentro das regras do jogo.</li>
+                <li><strong>Sem spam ou flood no chat:</strong> Evite repetir mensagens, usar CAPS LOCK excessivo ou divulgar outros servidores.</li>
+                <li><strong>Proteja suas construções:</strong> Use os sistemas de proteção disponíveis no servidor. A staff não se responsabiliza por construções não protegidas.</li>
+                <li><strong>Nada de trapaças na economia:</strong> Evite práticas abusivas como farm AFK com autoclickers, duplicação de itens ou outras formas de quebrar o sistema econômico.</li>
+                <li><strong>Respeite a Staff:</strong> A equipe de moderação está aqui para ajudar. Acatar suas orientações é obrigatório. Caso tenha reclamações, use os canais corretos (ex: Discord).</li>
+                <li><strong>Sem construções ofensivas ou inapropriadas:</strong> Construções com conteúdo sexual, político extremo, religioso ou ofensivo serão removidas e os responsáveis punidos.</li>
+                <li><strong>Tenha bom senso. Nem tudo precisa estar escrito:</strong> Use o bom senso e jogue de forma justa e divertida para todos, não faça coisas idiotas que você não gostaria que fizessem com você.</li>
+                <li><strong>Atenção: Entre na brincadeira e se divirta:</strong> Nem tudo deve ser levado a sério, é apenas um jogo, então se divirta, faça novas amizades, crie alianças, ou quem sabe pregue uma peça, mas nada muito pesado, ok?.</li>
+            </ol>
+            <p><em>As penalidades variam de advertências até banimento permanente, dependendo da gravidade da infração.</em></p>
+            <!-- Botão Discord -->
+            <p class="general-text" style="text-align: center; margin-bottom: 15px;">Se tiver dúvidas, sugestões ou quiser reportar algo, fale com a equipe via nosso Discord:</p>
+        <div class="discord-button-placeholder">
+                <a href="index.html#discord" class="cta-button cta-button-primary-roxo" style="width: 100%; max-width: 800px;">Acessar Discord</a>
+            </div>
+
+            <span class="final-logo">ALEXANDRIA</span>
+            <span class="tagline">Construa seu legado. Viva sua aventura</span>
+            <span class="since-date">Since 2023</span>
+            <span class="copyright">© 2025 Alexandria™. Todos os direitos reservados.</span>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slideshowContainer = document.getElementById('server-slideshow');
+            const prevButton = document.getElementById('prev-slide');
+            const nextButton = document.getElementById('next-slide');
+
+            // Lista de imagens extraídas
+            const serverImages = [
+                'images/servidor_slideshow/fotos mine/2023-12-01_04.09.22.png',
+                'images/servidor_slideshow/fotos mine/2023-12-01_04.09.41.png',
+                'images/servidor_slideshow/fotos mine/2023-12-02_05.47.19.png',
+                'images/servidor_slideshow/fotos mine/2023-12-05_02.57.29.png',
+                'images/servidor_slideshow/fotos mine/2023-12-05_02.57.46.png',
+                'images/servidor_slideshow/fotos mine/2023-12-07_23.42.46.png',
+                'images/servidor_slideshow/fotos mine/2023-12-08_01.37.21.png',
+                'images/servidor_slideshow/fotos mine/2023-12-08_01.37.31.png',
+                'images/servidor_slideshow/fotos mine/2023-12-31_01.03.17.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.18.00.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.18.35.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.19.04.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.19.22.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.19.29.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.24.55.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.25.20.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.26.03.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.26.19.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.26.27.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.26.54.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.27.01.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.27.17.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.27.57.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.28.40.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.29.06.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.29.48.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.31.25.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.32.21.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.35.58.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.36.10.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.36.26.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.37.30.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.38.11.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.43.27.png',
+                'images/servidor_slideshow/fotos mine/2024-01-12_23.43.33.png',
+                'images/servidor_slideshow/fotos mine/2024-01-18_04.37.33.png',
+                'images/servidor_slideshow/fotos mine/mine1.png',
+                'images/servidor_slideshow/fotos mine/mine2.png',
+                'images/servidor_slideshow/fotos mine/mine3.png',
+                'images/servidor_slideshow/fotos mine/mine4.png',
+                'images/servidor_slideshow/fotos mine/mine5.png',
+                'images/servidor_slideshow/fotos mine/mine6.png',
+                'images/servidor_slideshow/fotos mine/mine7.png',
+                'images/servidor_slideshow/fotos mine/mine8.png',
+                'images/servidor_slideshow/fotos mine/the goat.png'
+            ];
+
+            let currentServerSlide = 0;
+            let slideElements = [];
+            let slideInterval; // Variável para guardar o intervalo
+
+            // Criar elementos de imagem e adicionar ao container
+            serverImages.forEach((src, index) => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = `Imagem do servidor ${index + 1}`;
+                slideshowContainer.insertBefore(img, slideshowContainer.querySelector('.slideshow-nav')); // Inserir antes dos botões
+                slideElements.push(img);
+            });
+
+            // Função para mostrar um slide específico
+            function showSlide(index) {
+                if (slideElements.length === 0) return;
+                // Remover 'active' de todos os slides
+                slideElements.forEach(slide => slide.classList.remove('active'));
+                // Adicionar 'active' ao slide correto
+                currentServerSlide = (index + slideElements.length) % slideElements.length; // Garante índice válido
+                slideElements[currentServerSlide].classList.add('active');
+            }
+
+            // Função para avançar para o próximo slide (usado pelo timer e botão next)
+            function nextSlide() {
+                showSlide(currentServerSlide + 1);
+            }
+
+            // Função para voltar para o slide anterior (usado pelo botão prev)
+            function prevSlide() {
+                showSlide(currentServerSlide - 1);
+            }
+
+            // Iniciar mostrando o primeiro slide
+            showSlide(0);
+
+            // Iniciar a troca automática de slides
+            function startSlideShow() {
+                 // Limpa intervalo anterior se existir
+                clearInterval(slideInterval);
+                // Ajuste do temporizador para 7 segundos (7000 ms)
+                slideInterval = setInterval(nextSlide, 7000); // Troca a cada 7 segundos
+            }
+
+            // Parar a troca automática de slides
+            function stopSlideShow() {
+                clearInterval(slideInterval);
+            }
+
+            // Adicionar eventos aos botões
+            nextButton.addEventListener('click', () => {
+                nextSlide();
+                stopSlideShow(); // Para o automático ao clicar manualmente
+            });
+
+            prevButton.addEventListener('click', () => {
+                prevSlide();
+                stopSlideShow(); // Para o automático ao clicar manualmente
+            });
+
+            // Iniciar o slideshow automático
+            startSlideShow();
+
+            // Opcional: Pausar slideshow ao passar o mouse sobre ele
+            slideshowContainer.addEventListener('mouseenter', stopSlideShow);
+            slideshowContainer.addEventListener('mouseleave', startSlideShow);
+
+            // Adicionar sparkles aos botões roxos (se houver algum nesta página)
+            const sparkleButtons = document.querySelectorAll('.cta-button-primary-roxo');
+            sparkleButtons.forEach(button => {
+                const sparkleContainer = document.createElement('div');
+                sparkleContainer.className = 'sparkle-container';
+                button.appendChild(sparkleContainer);
+
+                // Criar elementos de sparkle (brilhos) - Código atualizado pelo usuário
+                const createSparkles = () => {
+                    const sparkleCount = 8;
+                    // Limpar sparkles antigos para evitar acúmulo
+                    // sparkleContainer.innerHTML = ''; // Remover se causar piscadas indesejadas
+
+                    for (let i = 0; i < sparkleCount; i++) {
+                        const sparkle = document.createElement('div');
+                        // Usar estilos inline conforme o código fornecido
+                        sparkle.style.position = 'absolute';
+                        sparkle.style.width = '4px';
+                        sparkle.style.height = '4px';
+                        sparkle.style.borderRadius = '50%';
+                        sparkle.style.backgroundColor = 'white';
+                        sparkle.style.boxShadow = '0 0 8px 2px rgba(255, 255, 255, 0.8)';
+                        sparkle.style.opacity = '0';
+                        sparkle.style.zIndex = '3';
+                        sparkle.style.pointerEvents = 'none';
+
+                        const x = Math.random() * 100;
+                        const y = Math.random() * 100;
+                        sparkle.style.left = `${x}%`;
+                        sparkle.style.top = `${y}%`;
+
+                        // Animação de fade in/out e movimento (simplificada)
+                        const duration = Math.random() * 0.8 + 0.4; 
+                        const delay = Math.random() * 0.5;
+
+                        sparkle.style.transition = `opacity ${duration}s ease-in-out ${delay}s, transform ${duration}s ease-out ${delay}s`;
+                        
+                        sparkleContainer.appendChild(sparkle);
+
+                        // Forçar reflow para aplicar estado inicial
+                        void sparkle.offsetWidth; 
+
+                        // Animar para visível e com leve movimento/escala
+                        sparkle.style.opacity = '1';
+                        sparkle.style.transform = `translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px) scale(${Math.random() * 0.3 + 0.9})`;
+
+                        // Agendar desaparecimento e remoção
+                        setTimeout(() => {
+                            sparkle.style.opacity = '0';
+                            // Remover o elemento após a transição de fade out
+                            setTimeout(() => sparkle.remove(), duration * 1000 + delay * 1000); 
+                        }, (duration + delay) * 1000 * 0.6); // Começa a desaparecer um pouco antes
+                    }
+                };
+
+                // Chamar a função para criar sparkles em intervalos
+                createSparkles(); // Cria na carga inicial
+                setInterval(createSparkles, 1800); // Cria novos sparkles a cada 1.8 segundos
+            });
+        });
+    </script>
+
+</body>
+
+</html>
